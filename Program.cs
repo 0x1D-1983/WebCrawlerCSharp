@@ -9,14 +9,14 @@ namespace WebCrawlerCsharp
     class Program
     {
         // static Func<string, IEnumerable<string>> MemoizedCrawler = Memoize<string, IEnumerable<string>>(Crawler);
-        static Func<string, IEnumerable<string>> ThreadSafeMemoizedCrawler = ThreadSafeMemoized<string, IEnumerable<string>>(Crawler);
+        static Func<string, IEnumerable<string>> ThreadSafeLazyMemoizeCrawler = ThreadSafeLazyMemoize<string, IEnumerable<string>>(Crawler);
 
         static void Main(string[] args)
         {
-            var links = new string[] { "http://www.google.com", "http://www.microsoft.com" };
+            var links = new string[] { "http://www.google.com", "http://www.microsoft.com", "http://www.google.com" };
 
             var titles = from l in links.AsParallel()
-            from t in ThreadSafeMemoizedCrawler(l)
+            from t in ThreadSafeLazyMemoizeCrawler(l)
             select t;
 
             foreach(var title in titles)

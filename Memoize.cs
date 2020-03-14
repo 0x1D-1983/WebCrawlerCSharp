@@ -6,7 +6,7 @@ namespace WebCrawlerCsharp
 {
     public class MemoizeExtensions
     {
-        public static Func<T, R> Memoize<T, R>(Func<T, R> func) where T:IComparable
+        public static Func<T, R> Memoize<T, R>(Func<T, R> func) where T : IComparable
         {
             var cache = new Dictionary<T, R>();
 
@@ -16,11 +16,17 @@ namespace WebCrawlerCsharp
             };
         }
 
-        public static Func<T, R> ThreadSafeMemoized<T, R>(Func<T, R> func) where T:IComparable
+        public static Func<T, R> ThreadSafeMemoize<T, R>(Func<T, R> func) where T : IComparable
         {
             var cache = new ConcurrentDictionary<T, R>();
 
-            return x => cache.GetOrAdd(x, func(x));
+            return arg => cache.GetOrAdd(arg, x => func(x));
+        }
+
+        public static Func<T, R> ThreadSafeLazyMemoize<T, R>(Func<T, R> func) where T : IComparable
+        {
+            var cache = new ConcurrentDictionary<T, Lazy<R>>();
+            return arg => cache.GetOrAdd(arg, x => new Lazy<R>(() => func(x))).Value;
         }
     }
 }
